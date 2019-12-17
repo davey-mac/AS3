@@ -17,7 +17,7 @@
                 "remark": "{{ app_name }}",
                 "{{ tenant_name }}": {
                         "class": "Tenant",
-                        "template": "generic",
+                        "{{ app_name }}": {"template": "generic",
                         "{{ app_name }}": {
                                 "class": "Service_HTTPS",
                                 "virtualAddresses":
@@ -32,63 +32,63 @@
                                 {% endif %}
                                 "snat": "auto",
                                 "profileTCP": {"use": "{{ tcp_profile }}"},
-                                "profileHTTP": {"use": "{{ http_monitor }}"},
-
-                                "{{ clientssl_profile }}": {
-                                        "class": "TLS_Server",
-                                        "certificates": [
-                                                {
+                                "profileHTTP": {"use": "{{ http_monitor }}"}
+                        },
+                        "{{ clientssl_profile }}": {
+                                "class": "TLS_Server",
+                                "certificates": [
+                                        {
                                                 "certificate": "webcert"
-                                                }
-                                        ]
-                                },
-                                {% if SSL_OFFLOAD != "True" %}
-                                "{{ serverssl_profile }}": {
-                                        "class": "TLS_Client",
-                                        "clientCertificate":"webcert"
-                                },
-                                {% endif %}
-                                "webcert": {
-                                        "class": "Certificate",
-                                        "certificate": {"bigip": "/Common/default.crt"},
-                                        "privateKey": {"bigip": "/Common/default.key"}
-                                },
-                                "{{ pool_name }}": {
-                                        "class": "Pool",
-                                        "monitors": [
-                                                {
-                                                        "use": "{{ http_monitor }}"
-                                                }
-                                        ],
-                                        "members": [
-                                                {
-                                                        {% if SSL_OFFLOAD == "True" %}
-                                                        "servicePort": 80,
-                                                        {% else %}
-                                                        "servicePort": 443,
-                                                        {% endif %}
-                                                        "serverAddresses": [
-                                                                {% set comma = joiner(",") %}
-                                                                {% for member in pool_members %}
-                                                                {{comma()}} "{{ hostvars[member]['private_ip'] }}"
-                                                                {% endfor %}
-                                                        ]
-                                                }
-                                        ]
-                                },
-                                "{{ http_monitor }}": {
-                                        "class": "Monitor",
-                                        "monitorType": "http"
-                                },
-                                "{{ tcp_profile }}": {
-                                        "class": "TCP_Profile",
-                                        "label": "{{ tcp_profile }}"
-                                },
-                                "{{ http_profile }}": {
-                                        "class": "HTTP_Profile",
-                                        "label": "{{ http_profile }}"
-                                }
+                                        }
+                                ]
+                        },
+                        {% if SSL_OFFLOAD != "True" %}
+                        "{{ serverssl_profile }}": {
+                                "class": "TLS_Client",
+                                "clientCertificate":"webcert"
+                        },
+                        {% endif %}
+                        "webcert": {
+                                "class": "Certificate",
+                                "certificate": {"bigip": "/Common/default.crt"},
+                                "privateKey": {"bigip": "/Common/default.key"}
+                        },
+                        "{{ pool_name }}": {
+                                "class": "Pool",
+                                "monitors": [
+                                        {
+                                                "use": "{{ http_monitor }}"
+                                        }
+                                ],
+                                "members": [
+                                        {
+                                                {% if SSL_OFFLOAD == "True" %}
+                                                "servicePort": 80,
+                                                {% else %}
+                                                "servicePort": 443,
+                                                {% endif %}
+                                                "serverAddresses": [
+                                                        {% set comma = joiner(",") %}
+                                                        {% for member in pool_members %}
+                                                        {{comma()}} "{{ hostvars[member]['private_ip'] }}"
+                                                        {% endfor %}
+                                                ]
+                                        }
+                                ]
+                        },
+                        "{{ http_monitor }}": {
+                                "class": "Monitor",
+                                "monitorType": "http"
+                        },
+                        "{{ tcp_profile }}": {
+                                "class": "TCP_Profile",
+                                "label": "{{ tcp_profile }}"
+                        },
+                        "{{ http_profile }}": {
+                                "class": "HTTP_Profile",
+                                "label": "{{ http_profile }}"
                         }
                 }
         }
+}
 }
