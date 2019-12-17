@@ -89,8 +89,7 @@
                                         "class": "HTTP_Profile",
                                         "label": "{{ http_profile }}"
                                 }
+                        }
                 }
         }
 }
-}
-                        
