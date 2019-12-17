@@ -18,6 +18,7 @@
                 "{{ tenant_name }}": {
                         "class": "Tenant",
                         "{{ app_name }}": {
+                                "class": "Application",
                                 "template": "generic",
                                 "{{ app_name }}": {
                                         "class": "Service_HTTPS",
