@@ -31,7 +31,8 @@
                                 "clientTLS": "{{ serverssl_profile }}",
                                 {% endif %}
                                 "snat": "auto",
-                                "profileTCP": {"use": "{{ tcp_profile }}"}
+                                "profileTCP": {"use": "{{ tcp_profile }}"},
+                                "profileHTTP": {"use": "{{ http_monitor }}"}
                         },
                         "{{ clientssl_profile }}": {
                                 "class": "TLS_Server",
@@ -82,8 +83,11 @@
                         "{{ tcp_profile }}": {
                                 "class": "TCP_Profile",
                                 "label": "{{ tcp_profile }}"
+                        },
+                        "{{ http_profile }}": {
+                                "class": "HTTP_Profile",
+                                "label": "{{ http_profile }}"
                         }
                 }
         }
 }
-
