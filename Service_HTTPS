@@ -51,7 +51,7 @@
                         "webcert": {
                                 "class": "Certificate",
                                 "certificate": {"bigip": "/Common/default.crt"},
-                                "privateKey": {"bigip": "/Common/default.key"}.
+                                "privateKey": {"bigip": "/Common/default.key"}
                         },
                         "{{ pool_name }}": {
                                 "class": "Pool",
