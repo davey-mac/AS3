@@ -75,7 +75,7 @@
                                         }
                                 ]
                         },
-                        "{{ http_mon }}": {
+                        "{{ http_monitor }}": {
                                 "class": "Monitor",
                                 "monitorType": "http"
                         },
