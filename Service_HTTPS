@@ -33,7 +33,7 @@
                                         {% endif %}
                                         "snat": "auto",
                                         "profileTCP": {"use": "{{ tcp_profile }}"},
-                                        "profileHTTP": {"use": "{{ http_monitor }}"}
+                                        "profileHTTP": {"use": "{{ http_profile }}"}
                                 },
                                 "{{ clientssl_profile }}": {
                                         "class": "TLS_Server",
