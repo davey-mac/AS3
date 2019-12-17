@@ -1,4 +1,11 @@
 {
+        {% set pool_name = "_".join([app_name,'pool']) %}
+        {% set tcp_profile = "_".join([app_name,'clienttcp_profile']) %}
+        {% set http_profile = "_".join([app_name,'http_pofile']) %}
+        {% set http_monitor = "_".join([app_name,'http_monitor']) %}
+        {% set clientssl_profile = "_".join([app_name,'clientssl_profile']) %}
+        {% set serverssl_profile = "_".join([app_name,'clientssl_profile']) %}
+
         "class": "AS3",
         "action": "deploy",
         "persist": true,
@@ -49,7 +56,7 @@
                                 "class": "Pool",
                                 "monitors": [
                                         {
-                                                "use": "{{ http_mon }}"
+                                                "use": "{{ http_monitor }}"
                                         }
                                 ],
                                 "members": [
