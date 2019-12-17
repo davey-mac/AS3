@@ -78,6 +78,7 @@
                         },
                         "{{ http_monitor }}": {
                                 "class": "Monitor",
+                                "monitorType": "http"
                         },
                         "{{ tcp_profile }}": {
                                 "class": "TCP_Profile",
