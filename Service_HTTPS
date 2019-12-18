@@ -7,16 +7,19 @@
         {% set serverssl_profile = "_".join([app_name,'clientssl_profile']) %}
 
         "class": "AS3",
-        "action": "deploy",
-        "persist": true,
+        "action": "{{ action_var | default('dry-run') }}",
+        "persist": "{{ persist_var | default('true') }}",
+        "syncToGroup": "{{ syncToGroup_var | default('') }}",
         "declaration": {
                 "class": "ADC",
                 "schemaVersion": "3.15.0",
                 "id": "12345",
-                "label": "{{ app_name }}",
+                "label": "{{ app_name }} deployment",
                 "remark": "{{ app_name }}",
+                "updateMode": "selective",
                 "{{ tenant_name }}": {
                         "class": "Tenant",
+                        "defaultRouteDomain": {{ defaultRouteDomain_var | default(0) }},
                         "{{ app_name }}": {
                                 "class": "Application",
                                 "template": "generic",
@@ -26,13 +29,13 @@
                                         [
                                                 "{{ dest_ip }}"
                                         ],
-                                        "virtualPort": 443,
+                                        "virtualPort": {{ virtualPort_var | default(443) }},
                                         "pool": "{{ pool_name }}",
                                         "serverTLS": "{{ clientssl_profile }}",
                                         {% if SSL_OFFLOAD != "True" %}
                                         "clientTLS": "{{ serverssl_profile }}",
                                         {% endif %}
-                                        "snat": "auto",
+                                        "snat": "{{ snat_var | default('auto') }}",
                                         "profileTCP": {"use": "{{ tcp_profile }}"},
                                         "profileHTTP": {"use": "{{ http_profile }}"}
                                 },
@@ -65,9 +68,9 @@
                                         "members": [
                                                 {
                                                         {% if SSL_OFFLOAD == "True" %}
-                                                        "servicePort": 80,
+                                                        "servicePort": {{ servicePort_var | default(80) }},
                                                         {% else %}
-                                                        "servicePort": 443,
+                                                        "servicePort": {{ servicePort_var | default(443) },
                                                         {% endif %}
                                                         "serverAddresses": [
                                                                 {% set comma = joiner(",") %}
@@ -80,7 +83,13 @@
                                 },
                                 "{{ http_monitor }}": {
                                         "class": "Monitor",
-                                        "monitorType": "http"
+                                        "monitorType": "{{ monitorType_var | default('http') }}",
+                                        {% if monitorType_var == "http" %}
+                                        "receive": "{{ receive_var | default('HTTP/1.'') }}",
+                                        "receiveDown": "{{ receiveDown_var | default('') }}",
+                                        "reverse": "{{ reverse_var | default(false) }}",
+                                        "send": "{{ send_var | default('HEAD / HTTP/1.0rnrn') }}"
+                                        {% endif %}
                                 },
                                 "{{ tcp_profile }}": {
                                         "class": "TCP_Profile",
