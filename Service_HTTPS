@@ -8,7 +8,7 @@
 
         "class": "AS3",
         "action": "{{ action_var | default('dry-run') }}",
-        "persist": "{{ persist_var | default('true') }}",
+        "persist": {{ persist_var | default(true) }},
         "syncToGroup": "{{ syncToGroup_var | default('') }}",
         "declaration": {
                 "class": "ADC",
@@ -70,7 +70,7 @@
                                                         {% if SSL_OFFLOAD == "True" %}
                                                         "servicePort": {{ servicePort_var | default(80) }},
                                                         {% else %}
-                                                        "servicePort": {{ servicePort_var | default(443) },
+                                                        "servicePort": {{ servicePort_var | default(443) }},
                                                         {% endif %}
                                                         "serverAddresses": [
                                                                 {% set comma = joiner(",") %}
@@ -83,13 +83,7 @@
                                 },
                                 "{{ http_monitor }}": {
                                         "class": "Monitor",
-                                        "monitorType": "{{ monitorType_var | default('http') }}",
-                                        {% if monitorType_var == "http" %}
-                                        "receive": "{{ receive_var | default('HTTP/1.'') }}",
-                                        "receiveDown": "{{ receiveDown_var | default('') }}",
-                                        "reverse": "{{ reverse_var | default(false) }}",
-                                        "send": "{{ send_var | default('HEAD / HTTP/1.0rnrn') }}"
-                                        {% endif %}
+                                        "monitorType": "{{ monitorType_var | default('http') }}"
                                 },
                                 "{{ tcp_profile }}": {
                                         "class": "TCP_Profile",
