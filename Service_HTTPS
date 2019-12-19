@@ -4,7 +4,15 @@
         {% set http_profile = "_".join([app_name,'http_pofile']) %}
         {% set http_monitor = "_".join([app_name,'http_monitor']) %}
         {% set clientssl_profile = "_".join([app_name,'clientssl_profile']) %}
-        {% set serverssl_profile = "_".join([app_name,'clientssl_profile']) %}
+        {% set serverssl_profile = "_".join([app_name,'serverssl_profile']) %}
+        {% set classification_profile = "_".join([app_name,'classification_profile']) %}
+        {% set dos_profile = "_".join([app_name,'dos_profile']) %}
+        {% set http_acceleration_profile = "_".join([app_name,'http_acceleration_profile']) %}
+        {% set http_compression_profile = "_".join([app_name,'http_compression_profile']) %}
+        {% set ip_other_profile = "_".join([app_name,'ip_other_profile']) %}
+        {% set multiplex_profile = "_".join([app_name,'multiplex_profile']) %}
+        {% set stream_profile = "_".join([app_name,'stream_profile']) %}
+        {% set traffic_log_profile = "_".join([app_name,'traffic_log_profile']) %}
 
         "class": "AS3",
         "action": "{{ action_var | default('dry-run') }}",
@@ -31,25 +39,37 @@
                                         ],
                                         "virtualPort": {{ virtualPort_var | default(443) }},
                                         "pool": "{{ pool_name }}",
-                                        {% if class == "Service_HTTPS" %}
                                         "serverTLS": "{{ clientssl_profile }}",
-                                        {% if SSL_OFFLOAD != "True" %}
+                                        {% if SSL_OFFLOAD == false %}
                                         "clientTLS": "{{ serverssl_profile }}",
-                                        {% endif %}
                                         {% endif %}
                                         "snat": "{{ snat_var | default('auto') }}",
                                         "profileTCP": {"use": "{{ tcp_profile }}"},
-                                        "profileHTTP": {"use": "{{ http_profile }}"}
+                                        "profileHTTP": {"use": "{{ http_profile }}"},
+                                        "profileClassification": {"use": "{{ classification_profile }}"},
+                                        "profileDOS": {"use": "{{ dos_profile }}"},
+                                        "profileHTTPAcceleration": {"use": "{{ http_acceleration_profile }}"},
+                                        "profileHTTPCompression": {"use": "{{ http_compression_profile }}"},
+                                        "profileIPOther": {"use": "{{ ip_other_profile }}"},
+                                        "profileMultiplex": {"use": "{{ multiplex_profile }}"},
+                                        "profileStream": {"use": "{{ stream_profile }}"},
+                                        "profileTrafficLog": {"use": "{{ traffic_log_profile }}"}
                                 },
                                 "{{ clientssl_profile }}": {
                                         "class": "TLS_Server",
                                         "certificates": [
                                                 {
-                                                        "certificate": "client_cert"
+                                                        "certificate": "client_cert",
+                                                        "matchToSNI": ""
                                                 }
                                         ]
                                 },
-                                {% if SSL_OFFLOAD != "True" %}
+                                "client_cert": {
+                                        "class": "Certificate",
+                                        "certificate": {"bigip": "/Common/default.crt"},
+                                        "privateKey": {"bigip": "/Common/default.key"}
+                                },
+                                {% if SSL_OFFLOAD == false %}
                                 "{{ serverssl_profile }}": {
                                         "class": "TLS_Client",
                                         "clientCertificate":"server_cert"
@@ -59,11 +79,6 @@
                                         "certificate": {"bigip": "/Common/default.crt"}
                                 },
                                 {% endif %}
-                                "client_cert": {
-                                        "class": "Certificate",
-                                        "certificate": {"bigip": "/Common/default.crt"},
-                                        "privateKey": {"bigip": "/Common/default.key"}
-                                },
                                 "{{ pool_name }}": {
                                         "class": "Pool",
                                         "monitors": [
@@ -73,7 +88,7 @@
                                         ],
                                         "members": [
                                                 {
-                                                        {% if SSL_OFFLOAD == "True" %}
+                                                        {% if SSL_OFFLOAD == true %}
                                                         "servicePort": {{ servicePort_var | default(80) }},
                                                         {% else %}
                                                         "servicePort": {{ servicePort_var | default(443) }},
@@ -98,6 +113,38 @@
                                 "{{ http_profile }}": {
                                         "class": "HTTP_Profile",
                                         "label": "{{ http_profile }}"
+                                },
+                                "{{ classification_profile }}": {
+                                        "class": "Classification_Profile",
+                                        "label": "{{ classification_profile }}"
+                                },
+                                "{{ dos_profile }}": {
+                                        "class": "DOS_Profile",
+                                        "label": "{{ dos_profile }}"
+                                },
+                                "{{ http_acceleration_profile }}": {
+                                        "class": "HTTP_Acceleration_Profile",
+                                        "label": "{{ http_acceleration_profile }}"
+                                },
+                                "{{ http_compression_profile }}": {
+                                        "class": "HTTP_Compress",
+                                        "label": "{{ http_compression_profile }}"
+                                },
+                                "{{ ip_other_profile }}": {
+                                        "class": "IP_Other_Profile",
+                                        "label": "{{ ip_other_profile }}"
+                                },
+                                "{{ multiplex_profile }}": {
+                                        "class": "Multiplex_Profile",
+                                        "label": "multiplex_profile"
+                                },
+                                "{{ stream_profile }}": {
+                                        "class": "Stream_Profile",
+                                        "label": "{{ stream_profile }}"
+                                },
+                                "{{ traffic_log_profile }}": {
+                                        "class": "Traffic_Log_Profile",
+                                        "label": "{{ traffic_log_profile }}"
                                 }
                         }
                 }
