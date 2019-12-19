@@ -32,9 +32,9 @@
                                         "virtualPort": {{ virtualPort_var | default(443) }},
                                         "pool": "{{ pool_name }}",
                                         {% if class == "Service_HTTPS" %}
-                                        "serverTLS": {"use": "{{ clientssl_profile }}"},
+                                        "serverTLS": "{{ clientssl_profile }}",
                                         {% if SSL_OFFLOAD != "True" %}
-                                        "clientTLS": {"use": "{{ serverssl_profile }}"},
+                                        "clientTLS": "{{ serverssl_profile }}",
                                         {% endif %}
                                         {% endif %}
                                         "snat": "{{ snat_var | default('auto') }}",
