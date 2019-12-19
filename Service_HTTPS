@@ -45,20 +45,24 @@
                                         "class": "TLS_Server",
                                         "certificates": [
                                                 {
-                                                        "certificate": "webcert"
+                                                        "certificate": "client_cert"
                                                 }
                                         ]
                                 },
                                 {% if SSL_OFFLOAD != "True" %}
                                 "{{ serverssl_profile }}": {
                                         "class": "TLS_Client",
-                                        "clientCertificate":"webcert"
+                                        "clientCertificate":"server_cert"
                                 },
                                 {% endif %}
-                                "webcert": {
+                                "client_cert": {
                                         "class": "Certificate",
                                         "certificate": {"bigip": "/Common/default.crt"},
                                         "privateKey": {"bigip": "/Common/default.key"}
+                                },
+                                "server_cert": {
+                                        "class": "Certificate",
+                                        "certificate": {"bigip": "/Common/default.crt"}
                                 },
                                 "{{ pool_name }}": {
                                         "class": "Pool",
