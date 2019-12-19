@@ -54,15 +54,15 @@
                                         "class": "TLS_Client",
                                         "clientCertificate":"server_cert"
                                 },
+                                "server_cert": {
+                                        "class": "Certificate",
+                                        "certificate": {"bigip": "/Common/default.crt"}
+                                },
                                 {% endif %}
                                 "client_cert": {
                                         "class": "Certificate",
                                         "certificate": {"bigip": "/Common/default.crt"},
                                         "privateKey": {"bigip": "/Common/default.key"}
-                                },
-                                "server_cert": {
-                                        "class": "Certificate",
-                                        "certificate": {"bigip": "/Common/default.crt"}
                                 },
                                 "{{ pool_name }}": {
                                         "class": "Pool",
