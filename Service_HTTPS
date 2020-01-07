@@ -14,6 +14,11 @@
         {% set stream_profile = "_".join([app_name,'stream_profile']) %}
         {% set traffic_log_profile = "_".join([app_name,'traffic_log_profile']) %}
 
+        {% set service_port_list = [] %}
+        {% for p in pool_members %}
+        {{ service_port_list.append(p) }}
+        {% endfor %}
+
         "class": "AS3",
         "action": "{{ action_var | default('dry-run') }}",
         "persist": {{ persist_var | default(true) }},
