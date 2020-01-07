@@ -87,11 +87,11 @@
                                                 }
                                         ],
                                         "members": [
-                                        		{% set comma = joiner(",") %}
+                                        	{% set comma = joiner(",") %}
                                                 {% for member in pool_members %}
-                                        		{{comma()}}
+                                                {{comma()}}
                                                 {
-                                                        "servicePort": {{hostvars[member]['port'] }}
+                                                        "servicePort": {{ hostvars[member]['port'] }}
                                                         "serverAddresses": ["{{ hostvars[member]['private_ip'] }}"]
                                                 }
                                                 {% endfor %}
