@@ -92,19 +92,20 @@
                                                 }
                                         ],
                                         "members": [
-                                                {
-                                                        {% if SSL_OFFLOAD == true %}
-                                                        "servicePort": {{ servicePort_var | default(80) }},
-                                                        {% else %}
-                                                        "servicePort": {{ servicePort_var | default(443) }},
-                                                        {% endif %}
-                                                        "serverAddresses": [
-                                                                {% set comma = joiner(",") %}
-                                                                {% for member in pool_members %}
-                                                                {{comma()}} "{{ hostvars[member]['private_ip'] }}"
-                                                                {% endfor %}
-                                                        ]
-                                                }
+                                        		{% set comma = joiner(",") %}
+                                        		{% for p in service_port_list %}
+                                        		{{ comma() }}
+                                        				{
+                                        						"servicePort": {{ p }},
+                                        						"serverAddresses": [
+                                        								{% for member in pool_members %}
+                                        								{{ comma() }}
+                                        								{% if hostvars[member]['port'] == p}
+                                        								"{{ hostvars[member]['private_ip'] }}"
+                                        								{% endfor %}
+                                        						]
+                                        				}
+                                                {% endfor %}
                                         ]
                                 },
                                 "{{ http_monitor }}": {
