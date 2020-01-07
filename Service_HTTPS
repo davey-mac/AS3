@@ -92,9 +92,7 @@
                                         		{{comma()}}
                                                 {
                                                         "servicePort": {{hostvars[member]['port'] }}
-                                                        "serverAddresses": [
-                                                                "{{ hostvars[member]['private_ip'] }}"
-                                                        ]
+                                                        "serverAddresses": ["{{ hostvars[member]['private_ip'] }}"]
                                                 }
                                                 {% endfor %}
                                         ]
