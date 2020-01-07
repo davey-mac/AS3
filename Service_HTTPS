@@ -99,15 +99,6 @@
                                                                 {{comma()}} "{{ hostvars[member]['private_ip'] }}"
                                                                 {% endfor %}
                                                         ]
-                                                },
-                                                {
-                                                	"servicePort":81,
-                                                	"serverAddresses": [
-                                                		{% set comma = joiner(",") %}
-                                                                {% for member in pool_members %}
-                                                                {{comma()}} "{{ hostvars[member]['private_ip'] }}"
-                                                                {% endfor %}
-                                                	]
                                                 }
                                         ]
                                 },
