@@ -95,6 +95,7 @@
                                         		{% set comma = joiner(",") %}
                                         		{% for p in service_port_list %}
                                         		{{ comma() }}
+                                        		{
                                         				{
                                         						"servicePort": {{ p }},
                                         						"serverAddresses": [
@@ -105,6 +106,7 @@
                                         								{% endfor %}
                                         						]
                                         				}
+                                                }
                                                 {% endfor %}
                                         ]
                                 },
