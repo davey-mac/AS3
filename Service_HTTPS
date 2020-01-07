@@ -92,22 +92,15 @@
                                                 }
                                         ],
                                         "members": [
-                                        		{% set comma = joiner(",") %}
-                                        		{% for p in service_port_list %}
-                                        		{{ comma() }}
-                                        		{
-                                        				{
-                                        						"servicePort": {{ p }},
-                                        						"serverAddresses": [
-                                        								{% for member in pool_members %}
-                                        								{{ comma() }}
-                                        								{% if hostvars[member]['port'] == p}
-                                        								"{{ hostvars[member]['private_ip'] }}"
-                                        								{% endfor %}
-                                        						]
-                                        				}
+                                                {
+                                                        "servicePort": {{hostvars[member]['port'] }}
+                                                        "serverAddresses": [
+                                                                {% set comma = joiner(",") %}
+                                                                {% for member in pool_members %}
+                                                                {{comma()}} "{{ hostvars[member]['private_ip'] }}"
+                                                                {% endfor %}
+                                                        ]
                                                 }
-                                                {% endfor %}
                                         ]
                                 },
                                 "{{ http_monitor }}": {
