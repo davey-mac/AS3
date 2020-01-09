@@ -1,3 +1,4 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema-3.9.0-3.json",
     "class": "AS3",
@@ -15,18 +16,12 @@
                 "class": "Application",
                 "template": "generic",
                 "{{app_name}}_vs": {
-                    "class": "{{ class_template }}",
+                    "class": "Service_HTTP",
                     "label": "my application {{app_name}}",
                     "virtualAddresses": [
                         "{{vs_ip}}"
                     ],
                     "virtualPort": {{vs_port}},
-                    {% if class_template == "Service_HTTPS" %}
-                    "serverTLS": "{{ app_name}}_clientssl_profile",
-                    {% if SSL_OFFLOAD == false %}
-                    "clientTLS": "{{ app_name }}_serverssl_profile",
-                    {% endif %}
-                    {% endif %}
                     "persistenceMethods": [],
                     "pool": "{{app_name}}_pool"
                 },
@@ -45,33 +40,7 @@
                         }
                         {% endfor %}
                     ]
-                },
-                {% if class_template == "Service_HTTPS" %}
-                "{{ app_name }}_clientssl_profile": {
-                    "class": "TLS_Server",
-                        "certificates": [
-                            {
-                                "certificate": "client_cert",
-                                    "matchToSNI": ""
-                            }
-                        ]
-                },
-                "client_cert": {
-                    "class": "Certificate",
-                    "certificate": {"bigip": "/Common/default.crt"},
-                    "privateKey": {"bigip": "/Common/default.key"}
-                },
-                {% if SSL_OFFLOAD == "False" %}
-                "{{ app_name }}_serverssl_profile": {
-                    "class": "TLS_Client",
-                    "clientCertificate":"server_cert"
-                },
-                "server_cert": {
-                    "class": "Certificate",
-                    "certificate": {"bigip": "/Common/default.crt"}
-                },
-                {% endif %}
-                {% endif %}
+                }
             }
         }
     }
