@@ -44,7 +44,7 @@
                         {% for member in groups['pool']%}
                         {{comma()}}
                         {
-                            "serverAddresses":['{{hostvars[member]['address']}}'],
+                            "serverAddresses":["{{hostvars[member]['address']}}"],
                             "servicePort":{{hostvars[member]['port']}}
                         }
                         {% endfor %}
