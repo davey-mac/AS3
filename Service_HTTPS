@@ -62,8 +62,8 @@
                 },
                 "client_cert": {
                     "class": "Certificate",
-                    "certificate": {"bigip": "/Common/default.crt"},
-                    "privateKey": {"bigip": "/Common/default.key"}
+                    "certificate": "{{ cert_data }}",
+                    "privateKey": "{{ key_data }}"
                 },
                 {% if SSL_OFFLOAD == "False" %}
                 "{{ app_name }}_serverssl_profile": {
