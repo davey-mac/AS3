@@ -21,6 +21,12 @@
                         "{{vs_ip}}"
                     ],
                     "virtualPort": {{vs_port}},
+                    {% if class_template == "Service_HTTPS" %}
+                    "serverTLS": "{{ app_name}}_clientssl_profile",
+                    {% if SSL_OFFLOAD == false %}
+                    "clientTLS": "{{ app_name }}_serverssl_profile",
+                    {% endif %}
+                    {% endif %}
                     "persistenceMethods": [],
                     "pool": "{{app_name}}_pool"
                 },
@@ -39,7 +45,33 @@
                         }
                         {% endfor %}
                     ]
-                }
+                },
+                {% if class_template == "Service_HTTPS" %}
+                "{{ app_name }}_clientssl_profile": {
+                    "class": "TLS_Server",
+                        "certificates": [
+                            {
+                                "certificate": "client_cert",
+                                    "matchToSNI": ""
+                            }
+                        ]
+                },
+                "client_cert": {
+                    "class": "Certificate",
+                    "certificate": {"bigip": "/Common/default.crt"},
+                    "privateKey": {"bigip": "/Common/default.key"}
+                },
+                {% if SSL_OFFLOAD == "False" %}
+                "{{ app_name }}_serverssl_profile": {
+                    "class": "TLS_Client",
+                    "clientCertificate":"server_cert"
+                },
+                "server_cert": {
+                    "class": "Certificate",
+                    "certificate": {"bigip": "/Common/default.crt"}
+                },
+                {% endif %}
+                {% endif %}
             }
         }
     }
