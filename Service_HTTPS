@@ -23,7 +23,7 @@
                     "virtualPort": {{vs_port}},
                     {% if class_template == "Service_HTTPS" %}
                     "serverTLS": "{{ app_name}}_clientssl_profile",
-                    {% if SSL_OFFLOAD == false %}
+                    {% if SSL_OFFLOAD == "False" %}
                     "clientTLS": "{{ app_name }}_serverssl_profile",
                     {% endif %}
                     {% endif %}
