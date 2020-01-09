@@ -20,7 +20,11 @@
                     "virtualAddresses": [
                         "{{vs_ip}}"
                     ],
-                    "virtualPort": {{vs_port}},
+                    {% if class_template == "Service_HTTPS" %}
+                    "virtualPort": {{vs_port | default(443)}},
+                    {% else %}
+                    "virtualPort": {{vs_port | default(80)}},
+                    {% endif %}
                     {% if class_template == "Service_HTTPS" %}
                     "serverTLS": "{{ app_name}}_clientssl_profile",
                     {% if SSL_OFFLOAD == "False" %}
