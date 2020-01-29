@@ -1,147 +1,82 @@
 {
-        {% set pool_name = "_".join([app_name,'pool']) %}
-        {% set tcp_profile = "_".join([app_name,'clienttcp_profile']) %}
-        {% set http_profile = "_".join([app_name,'http_pofile']) %}
-        {% set http_monitor = "_".join([app_name,'http_monitor']) %}
-        {% set clientssl_profile = "_".join([app_name,'clientssl_profile']) %}
-        {% set serverssl_profile = "_".join([app_name,'serverssl_profile']) %}
-        {% set classification_profile = "_".join([app_name,'classification_profile']) %}
-        {% set dos_profile = "_".join([app_name,'dos_profile']) %}
-        {% set http_acceleration_profile = "_".join([app_name,'http_acceleration_profile']) %}
-        {% set http_compression_profile = "_".join([app_name,'http_compression_profile']) %}
-        {% set ip_other_profile = "_".join([app_name,'ip_other_profile']) %}
-        {% set multiplex_profile = "_".join([app_name,'multiplex_profile']) %}
-        {% set stream_profile = "_".join([app_name,'stream_profile']) %}
-        {% set traffic_log_profile = "_".join([app_name,'traffic_log_profile']) %}
-
-        "class": "AS3",
-        "action": "{{ action_var | default('dry-run') }}",
-        "persist": {{ persist_var | default(true) }},
-        "syncToGroup": "{{ syncToGroup_var | default('') }}",
-        "declaration": {
-                "class": "ADC",
-                "schemaVersion": "3.15.0",
-                "id": "12345",
-                "label": "{{ app_name }} deployment",
-                "remark": "{{ app_name }}",
-                "updateMode": "selective",
-                "{{ tenant_name }}": {
-                        "class": "Tenant",
-                        "defaultRouteDomain": {{ defaultRouteDomain_var | default(0) }},
-                        "{{ app_name }}": {
-                                "class": "Application",
-                                "template": "generic",
-                                "{{ app_name }}": {
-                                        "class": "{{ class }}",
-                                        "virtualAddresses":
-                                        [
-                                                "{{ dest_ip }}"
-                                        ],
-                                        "virtualPort": {{ virtualPort_var | default(443) }},
-                                        "pool": "{{ pool_name }}",
-                                        "serverTLS": "{{ clientssl_profile }}",
-                                        {% if SSL_OFFLOAD == false %}
-                                        "clientTLS": "{{ serverssl_profile }}",
-                                        {% endif %}
-                                        "snat": "{{ snat_var | default('auto') }}",
-                                        "profileTCP": {"use": "{{ tcp_profile }}"},
-                                        "profileHTTP": {"use": "{{ http_profile }}"},
-                                        "profileClassification": {"use": "{{ classification_profile }}"},
-                                        "profileDOS": {"use": "{{ dos_profile }}"},
-                                        "profileHTTPAcceleration": {"use": "{{ http_acceleration_profile }}"},
-                                        "profileHTTPCompression": {"use": "{{ http_compression_profile }}"},
-                                        "profileIPOther": {"use": "{{ ip_other_profile }}"},
-                                        "profileMultiplex": {"use": "{{ multiplex_profile }}"},
-                                        "profileStream": {"use": "{{ stream_profile }}"},
-                                        "profileTrafficLog": {"use": "{{ traffic_log_profile }}"}
-                                },
-                                "{{ clientssl_profile }}": {
-                                        "class": "TLS_Server",
-                                        "certificates": [
-                                                {
-                                                        "certificate": "client_cert",
-                                                        "matchToSNI": ""
-                                                }
-                                        ]
-                                },
-                                "client_cert": {
-                                        "class": "Certificate",
-                                        "certificate": {"bigip": "/Common/default.crt"},
-                                        "privateKey": {"bigip": "/Common/default.key"}
-                                },
-                                {% if SSL_OFFLOAD == false %}
-                                "{{ serverssl_profile }}": {
-                                        "class": "TLS_Client",
-                                        "clientCertificate":"server_cert"
-                                },
-                                "server_cert": {
-                                        "class": "Certificate",
-                                        "certificate": {"bigip": "/Common/default.crt"}
-                                },
-                                {% endif %}
-                                "{{ pool_name }}": {
-                                        "class": "Pool",
-                                        "monitors": [
-                                                {
-                                                        "use": "{{ http_monitor }}"
-                                                }
-                                        ],
-                                        "members": [
-                                        	{% set comma = joiner(",") %}
-                                                {% for member in pool_members %}
-                                                {{comma()}}
-                                                {
-                                                        "serverAddresses": ["{{ hostvars[member]['private_ip'] }}"],
-                                                        "servicePort": {{ hostvars[member]['port'] }}
-                                                }
-                                                {% endfor %}
-                                        ]
-                                },
-                                "{{ http_monitor }}": {
-                                        "class": "Monitor",
-                                        "monitorType": "{{ monitorType_var | default('http') }}"
-                                },
-                                "{{ tcp_profile }}": {
-                                        "class": "TCP_Profile",
-                                        "label": "{{ tcp_profile }}"
-                                },
-                                "{{ http_profile }}": {
-                                        "class": "HTTP_Profile",
-                                        "label": "{{ http_profile }}"
-                                },
-                                "{{ classification_profile }}": {
-                                        "class": "Classification_Profile",
-                                        "label": "{{ classification_profile }}"
-                                },
-                                "{{ dos_profile }}": {
-                                        "class": "DOS_Profile",
-                                        "label": "{{ dos_profile }}"
-                                },
-                                "{{ http_acceleration_profile }}": {
-                                        "class": "HTTP_Acceleration_Profile",
-                                        "label": "{{ http_acceleration_profile }}"
-                                },
-                                "{{ http_compression_profile }}": {
-                                        "class": "HTTP_Compress",
-                                        "label": "{{ http_compression_profile }}"
-                                },
-                                "{{ ip_other_profile }}": {
-                                        "class": "IP_Other_Profile",
-                                        "label": "{{ ip_other_profile }}"
-                                },
-                                "{{ multiplex_profile }}": {
-                                        "class": "Multiplex_Profile",
-                                        "label": "multiplex_profile"
-                                },
-                                "{{ stream_profile }}": {
-                                        "class": "Stream_Profile",
-                                        "label": "{{ stream_profile }}"
-                                },
-                                "{{ traffic_log_profile }}": {
-                                        "class": "Traffic_Log_Profile",
-                                        "label": "{{ traffic_log_profile }}"
-                                }
+    "$schema": "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema-3.9.0-3.json",
+    "class": "AS3",
+    "action": "deploy",
+    "persist": true,
+    "declaration": {
+        "class": "ADC",
+        "schemaVersion": "3.12.0",
+        "id": "urn:uuid:33045210-3ab8-4636-9b2a-c98d22ab915d",
+        "label": "Sample 1",
+        "remark": "Simple HTTP Service with Round-Robin Load Balancing",
+        "{{service_name}}": {
+            "class": "Tenant",
+            "{{app_name}}": {
+                "class": "Application",
+                "template": "generic",
+                "{{app_name}}_vs": {
+                    "class": "{{ class_template }}",
+                    "label": "my application {{app_name}}",
+                    "virtualAddresses": [
+                        "{{vs_ip}}"
+                    ],
+                    {% if class_template == "Service_HTTPS" %}
+                    "virtualPort": {{vs_port | default(443)}},
+                    {% else %}
+                    "virtualPort": {{vs_port | default(80)}},
+                    {% endif %}
+                    {% if class_template == "Service_HTTPS" %}
+                    "serverTLS": "{{ app_name}}_clientssl_profile",
+                    {% if SSL_OFFLOAD == "False" %}
+                    "clientTLS": "{{ app_name }}_serverssl_profile",
+                    {% endif %}
+                    {% endif %}
+                    "persistenceMethods": [],
+                    "pool": "{{app_name}}_pool"
+                },
+                "{{app_name}}_pool": {
+                    "class": "Pool",
+                    "monitors": [
+                        "http"
+                    ],
+                    "members": [
+                        {% set comma = joiner(",") %}
+                        {% for member in groups['pool']%}
+                        {{comma()}}
+                        {
+                            "serverAddresses":["{{hostvars[member]['address']}}"],
+                            "servicePort":{{hostvars[member]['port']}}
                         }
-                }
+                        {% endfor %}
+                    ]
+                },
+                {% if class_template == "Service_HTTPS" %}
+                "{{ app_name }}_clientssl_profile": {
+                    "class": "TLS_Server",
+                        "certificates": [
+                            {
+                                "certificate": "client_cert",
+                                    "matchToSNI": ""
+                            }
+                        ]
+                },
+                "client_cert": {
+                    "class": "Certificate",
+                    "certificate": "{{ cert_data }}",
+                    "privateKey": "{{ key_data }}"
+                },
+                {% if SSL_OFFLOAD == "False" %}
+                "{{ app_name }}_serverssl_profile": {
+                    "class": "TLS_Client",
+                    "clientCertificate":"server_cert"
+                },
+                "server_cert": {
+                    "class": "Certificate",
+                    "certificate": {"bigip": "/Common/default.crt"}
+                },
+                {% endif %}
+                {% endif %}
+            }
         }
+    }
 }
